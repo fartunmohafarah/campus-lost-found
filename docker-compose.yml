@@ -1,0 +1,16 @@
+services:
+  lostfound:
+    build: .
+    image: campus-lost-found:latest
+    ports:
+      - "3000:3000"
+    environment:
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-real-deployments-0123456789abcdef}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Admin@123}
+      OFFICER_PASSWORD: ${OFFICER_PASSWORD:-Officer@123}
+    volumes:
+      - lostfound-data:/data
+    restart: unless-stopped
+
+volumes:
+  lostfound-data:

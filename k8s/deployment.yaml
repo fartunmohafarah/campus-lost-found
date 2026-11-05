@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lostfound
+  labels:
+    app: lostfound
+spec:
+  replicas: 1            # SQLite file DB on a ReadWriteOnce volume: keep a single replica (see README)
+  strategy:
+    type: Recreate       # avoids two pods opening the same database file during a rollout
+  selector:
+    matchLabels:
+      app: lostfound
+  template:
+    metadata:
+      labels:
+        app: lostfound
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: lostfound
+          image: campus-lost-found:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: DATA_DIR
+              value: /data
+            - name: JWT_SECRET
+              valueFrom: { secretKeyRef: { name: lostfound-secrets, key: JWT_SECRET } }
+            - name: ADMIN_PASSWORD
+              valueFrom: { secretKeyRef: { name: lostfound-secrets, key: ADMIN_PASSWORD } }
+            - name: OFFICER_PASSWORD
+              valueFrom: { secretKeyRef: { name: lostfound-secrets, key: OFFICER_PASSWORD } }
+          readinessProbe:
+            httpGet: { path: /api/health, port: 3000 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /api/health, port: 3000 }
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests: { cpu: 100m, memory: 128Mi }
+            limits: { cpu: 500m, memory: 256Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: { drop: ["ALL"] }
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: lostfound-data

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: lostfound
+  labels:
+    app: lostfound
+spec:
+  type: ClusterIP
+  selector:
+    app: lostfound
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000

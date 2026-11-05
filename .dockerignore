@@ -1,0 +1,9 @@
+node_modules
+npm-debug.log
+.git
+.github
+data
+coverage
+k8s
+tests
+*.md
