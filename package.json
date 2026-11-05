@@ -9,11 +9,13 @@
     "lint": "node scripts/lint.js",
     "test": "node --test --test-reporter=spec \"tests/*.test.js\""
   },
-  "engines": { "node": ">=22.13" },
+  "engines": {
+    "node": ">=22.13"
+  },
   "dependencies": {
     "bcryptjs": "2.4.3",
-    "express": "4.21.2",
+    "express": "4.22.3",
     "jsonwebtoken": "9.0.2",
-    "multer": "1.4.5-lts.1"
+    "multer": "2.5.0"
   }
 }
